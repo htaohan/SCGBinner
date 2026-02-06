@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "SCGBinner"
+version = "0.1.0"
+description = "SCG-guided metagenomic binning tool"
+authors = [
+    {name = "Haitao Han", email= "22110850021@m.fudan.edu.cn"}
+]
+dependencies = [
+    "numpy",
+    "pandas"
+]
+
+[project.scripts]
+scgbinner = "SCGBinner.wrapper:main"
