@@ -23,4 +23,5 @@ include-package-data = true
 zip-safe = false
 
 [tool.setuptools.package-data]
-SCGBinner = ["*.sh", "fraggenescan", "hmmsearch", "markers.hmm","data_aug/*", "models/*"]
+SCGBinner = ["*.sh", "fraggenescan", "hmmsearch", "markers.hmm","data_aug/*", "models/*", "scripts/*"]
+
