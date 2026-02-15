@@ -1,9 +1,0 @@
-Metadata-Version: 2.4
-Name: SCGBinner
-Version: 1.0.0
-Summary: SCG-guided metagenomic binning tool
-Author-email: Haitao Han <22110850021@m.fudan.edu.cn>
-License-File: LICENSE
-Requires-Dist: numpy
-Requires-Dist: pandas
-Dynamic: license-file
