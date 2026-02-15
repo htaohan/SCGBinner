@@ -5,7 +5,7 @@ from Bio import SeqIO
 from collections import defaultdict
 import pandas as pd
 from multiprocessing import Pool, cpu_count
-from filter_small_bins import filter_small_bins
+from .filter_small_bins import filter_small_bins
 
 from typing import List, Optional, Union, Dict
 

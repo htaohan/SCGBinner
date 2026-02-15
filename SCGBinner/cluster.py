@@ -12,8 +12,8 @@ from igraph import Graph
 from sklearn.preprocessing import normalize
 from sklearn.cluster._kmeans import euclidean_distances, stable_cumsum, KMeans, check_random_state, row_norms, MiniBatchKMeans
 
-from utils import get_length, calculateN50, save_result
-from scripts.gen_bins_from_tsv import gen_bins as gen_bins_from_tsv
+from .utils import get_length, calculateN50, save_result
+from .scripts.gen_bins_from_tsv import gen_bins as gen_bins_from_tsv
 from typing import List, Optional, Union
 from multiprocessing.sharedctypes import RawArray
 from ctypes import c_double

@@ -6,11 +6,11 @@ import numpy as np
 import os
 import sys
 
-from get_augfeature import get_ContrastiveLearningDataset
-from utils import get_length
+from .get_augfeature import get_ContrastiveLearningDataset
+from .utils import get_length
 
-from models.mlp import EmbeddingNet
-from simclr import SimCLR
+from .models.mlp import EmbeddingNet
+from .simclr import SimCLR
 
 torch.manual_seed(1)
 torch.cuda.manual_seed_all(1)
@@ -149,7 +149,7 @@ def train_CLmodel(logger, args):
         actn=nn.LeakyReLU(),
     )
 
-    from models.mlp2 import EmbeddingNet as EmbeddingNet2
+    from .models.mlp2 import EmbeddingNet as EmbeddingNet2
 
 
     emb_szs_list = [args.emb_szs] * args.n_layer

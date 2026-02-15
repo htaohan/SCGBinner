@@ -3,9 +3,9 @@ import logging
 import os
 import pandas as pd
 
-from SCGBinner_version import __version__ as ver
-from train_CLmodel import train_CLmodel
-from cluster import cluster
+from .SCGBinner_version import __version__ as ver
+from .train_CLmodel import train_CLmodel
+from .cluster import cluster
 
 
 def arguments():
@@ -269,7 +269,7 @@ def main():
 
     ## training
     if args.subcmd == 'train':
-        from marker_search import gen_scg_file
+        from .marker_search import gen_scg_file
         num_threads = args.num_threads
         _ = gen_scg_file(logger, args.contig_file, args.output_path, num_threads)
         logger.info('train')
@@ -284,8 +284,8 @@ def main():
     if args.subcmd == 'generate_aug_data':
         logger.info('generate_aug_data: fastafile')
 
-        from data_aug.generate_augfasta_and_saveindex import run_gen_augfasta
-        from data_aug.gen_cov import run_gen_cov
+        from .data_aug.generate_augfasta_and_saveindex import run_gen_augfasta
+        from .data_aug.gen_cov import run_gen_cov
         #from data_aug.gen_var import run_gen_cov_var
 
         run_gen_augfasta(logger, args)
@@ -296,7 +296,7 @@ def main():
     if args.subcmd == 'get_result':
         logger.info('get_result')
         #from utils import gen_seed
-        from get_final_result import run_get_final_result
+        from .get_final_result import run_get_final_result
 
         num_threads = args.num_threads
 

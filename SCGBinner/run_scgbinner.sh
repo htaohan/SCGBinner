@@ -10,7 +10,7 @@ VERSION="1.0.0"
 help_message () {
   echo ""
   echo "SCGBinner version: $VERSION"
-  echo "Usage: bash run_scgbinner.sh [options] -a contig_file -o output_dir -p bam_file"
+  echo "Usage: bash scgbinner [options] -a contig_file -o output_dir -b bam_file"
 	echo "Options:"
 	echo "  -a STR          metagenomic assembly file"
 	echo "  -o STR          output directory"
@@ -117,8 +117,7 @@ else
 fi
 
 
-current_path=$(pwd)
-chmod +x ${current_path}/../auxiliary/test_getmarker_2quarter.pl
+current_path="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
 
 ########################################################################################################
 ###### Get augmentation data
@@ -132,7 +131,7 @@ if [ -d "$folder" ]; then
     echo "Number of files containing '$keyword' in the folder: $count"
     if [ "$count" -ne ${n_views} ]; then
         echo "Running data augmentation."
-        python main.py generate_aug_data --contig_file ${contig_file} \
+        python -m SCGBinner.main generate_aug_data --contig_file ${contig_file} \
         --out_augdata_path ${output_dir}/data_augmentation \
         --n_views ${n_views} --bam_file_path "${bam_file_path}" --num_threads ${num_threads}
     else
@@ -141,7 +140,7 @@ if [ -d "$folder" ]; then
 else
     echo "${output_dir}/data_augmentation does not exist."
     echo "Running data augmentation."
-    python main.py generate_aug_data --contig_file ${contig_file} \
+    python -m SCGBinner.main generate_aug_data --contig_file ${contig_file} \
     --out_augdata_path ${output_dir}/data_augmentation \
     --n_views ${n_views} --bam_file_path "${bam_file_path}" --num_threads ${num_threads}
 fi
@@ -160,7 +159,7 @@ if [ -d "$folder" ]; then
     echo "Number of files containing '$keyword' in the folder: $count"
     if [ "$count" -ne 1 ]; then
         echo "Running getting representation."
-        python main.py train --data ${output_dir}/data_augmentation --contig_file ${contig_file} \
+        python -m SCGBinner.main train --data ${output_dir}/data_augmentation --contig_file ${contig_file} \
         --temperature ${temperature} --emb_szs_forcov ${emb_szs_forcov} \
         --batch_size ${batch_size} --emb_szs ${emb_szs} --n_views ${n_views} \
         --add_model_for_coverage --remove_single_copy ${remove_single_copy} --scg_batch_size ${scg_batch_size} \
@@ -171,7 +170,7 @@ if [ -d "$folder" ]; then
 else
     echo "${output_dir}/scgbinner_res does not exist."
     echo "Running getting representation."
-    python main.py train --data ${output_dir}/data_augmentation --contig_file ${contig_file} \
+    python -m SCGBinner.main train --data ${output_dir}/data_augmentation --contig_file ${contig_file} \
     --temperature ${temperature} --emb_szs_forcov ${emb_szs_forcov} \
     --batch_size ${batch_size} --emb_szs ${emb_szs} --n_views ${n_views} \
     --add_model_for_coverage --remove_single_copy ${remove_single_copy} --scg_batch_size ${scg_batch_size} \
@@ -185,12 +184,12 @@ if [[ $? -ne 0 ]] ; then echo "Something went wrong with running training networ
 ########################################################################################################
 emb_file=${output_dir}/scgbinner_res/embeddings.tsv
 
-python main.py bin --contig_file ${contig_file} \
+python -m SCGBinner.main bin --contig_file ${contig_file} \
 --emb_file ${emb_file} \
 --output_path ${output_dir}/scgbinner_res \
 --num_threads ${num_threads}
 
-python main.py get_result --contig_file ${contig_file} \
+python -m SCGBinner.main get_result --contig_file ${contig_file} \
 --output_path ${output_dir}/scgbinner_res \
 --num_threads ${num_threads}
 

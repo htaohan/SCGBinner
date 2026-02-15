@@ -67,8 +67,10 @@ def run_fraggenescan(fraggenescan, input_fasta, output_fasta, threads):
     '''
     Run FragGeneScan to predict all protein sequences.
     '''
+    pkg_dir = os.path.dirname(__file__)
+    fraggenescan_path = os.path.join(pkg_dir, "fraggenescan")
     worker(
-        [fraggenescan, '-s', input_fasta, '-o', output_fasta, '-w', '0', '-t', 'complete', '-p', str(threads)],
+        [fraggenescan_path, '-s', input_fasta, '-o', output_fasta, '-w', '0', '-t', 'complete', '-p', str(threads)],
         'An error has occured while running fraggenescan.'
     )
     os.remove(output_fasta + '.ffn')
@@ -155,6 +157,8 @@ def run_hmmsearch(hmmsearch, input_hmm, input_fasta, output_file, threads):
     input_fastas = list()
     output_files = list()
     process_pool = Pool(os.cpu_count())
+    pkg_dir = os.path.dirname(__file__)
+    hmmsearch_path = os.path.join(pkg_dir, "hmmsearch") 
     #
     for INPUT_FASTA in split_fasta(input_fasta, threads):
         input_fastas.append(INPUT_FASTA)
@@ -162,7 +166,7 @@ def run_hmmsearch(hmmsearch, input_hmm, input_fasta, output_file, threads):
         process_pool.apply_async(
             worker,
             (
-                [hmmsearch, '--cpu', '1', '--noali', '--domtblout', output_files[-1], input_hmm, INPUT_FASTA],
+                [hmmsearch_path, '--cpu', '1', '--noali', '--domtblout', output_files[-1], input_hmm, INPUT_FASTA],
                 'An error has occured while running hmmsearch.'
             )
         )
