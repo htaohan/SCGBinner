@@ -1,5 +1,5 @@
 # SCGBinner
-Metagenomic analysis tool
+Metagenomic binning method
 ## Install SCGBinner
 Install the dependecies of SCGBinner
 ```
@@ -17,6 +17,7 @@ pip install .
 ## Run SCGBinner
 ```
 conda activate SCGBinner
+########################## Run SCGBinner using single-coverage ##########################
 scgbinner -a contig_file.fa \
 -o output_path \
 -b S1.sorted.bam \
