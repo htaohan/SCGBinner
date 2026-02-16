@@ -14,3 +14,21 @@ git clone https://github.com/htaohan/SCGBinner.git
 cd SCGBinner
 pip install .
 ```
+## Run SCGBinner
+```
+conda activate SCGBinner
+scgbinner -a contig_file.fa \
+-o output_path \
+-b S1.sorted.bam \
+-t 16
+## Run SCGBinner using multi-coverage
+scgbinner -a contig_file.fa \
+-o output_path \
+-b "S1.sorted.bam S2.sorted.bam" \
+-t 16
+or
+scgbinner -a contig_file.fa \
+-o output_path \
+-b "*.sorted.bam" \
+-t 16
+```
