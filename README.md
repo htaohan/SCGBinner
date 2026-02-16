@@ -21,12 +21,14 @@ scgbinner -a contig_file.fa \
 -o output_path \
 -b S1.sorted.bam \
 -t 16
-## Run SCGBinner using multi-coverage
+
+########################## Run SCGBinner using multi-coverage ##########################
 scgbinner -a contig_file.fa \
 -o output_path \
 -b "S1.sorted.bam S2.sorted.bam" \
 -t 16
-or
+
+Alternatively, using wildcard expansion:
 scgbinner -a contig_file.fa \
 -o output_path \
 -b "*.sorted.bam" \
