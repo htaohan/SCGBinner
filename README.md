@@ -15,23 +15,30 @@ cd SCGBinner
 pip install .
 ```
 ## Run SCGBinner
+SCGBinner is recommended to be run in a GPU environment.
 ```
 conda activate SCGBinner
 ########################## Run SCGBinner using single-coverage ##########################
-scgbinner -a contig_file.fa \
--o output_path \
--b S1.sorted.bam \
--t 16
+scgbinner -a contig_file.fa -o output_path -b S1.sorted.bam -t 16
 
 ########################## Run SCGBinner using multi-coverage ##########################
-scgbinner -a contig_file.fa \
--o output_path \
--b "S1.sorted.bam S2.sorted.bam" \
--t 16
+scgbinner -a contig_file.fa -o output_path -b "S1.sorted.bam S2.sorted.bam" -t 16
 
 Alternatively, using wildcard expansion:
-scgbinner -a contig_file.fa \
--o output_path \
--b "*.sorted.bam" \
--t 16
+scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16
+```
+## Output
+The MAGs are output to the scgbinner_res/SCGBINNER_result directory.
+## Options
+```
+Options:
+  -a STR          metagenomic assembly file
+  -o STR          output directory
+  -b STR          bam files
+  -t INT          number of threads (default=16)
+  -n INT          number of views for contrastive multiple-view learning (default=6)
+  -l FLOAT        temperature in loss function (default=0.07 for assemblies with an N50 > 10000, default=0.15 for others)
+  -e INT          embedding size for comebined network (default=2048)
+  -c INT          embedding size for coverage network (default=2048)
+  -p INT          standard batch size (default=1024)
 ```
