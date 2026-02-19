@@ -28,7 +28,7 @@ Alternatively, using wildcard expansion:
 scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16
 ```
 ## Output
-The MAGs are output to the scgbinner_res/SCGBINNER_result directory.
+The MAGs can be found in the scgbinner_res/SCGBINNER_result directory.
 ## Options
 ```
 Options:
