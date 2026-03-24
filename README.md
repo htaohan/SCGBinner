@@ -29,6 +29,7 @@ scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16
 ```
 ## Output
 The MAGs can be found in the scgbinner_res/SCGBINNER_result directory.
+
 ## Options
 ```
 Options:
@@ -36,12 +37,10 @@ Options:
   -o STR          output directory
   -b STR          bam files
   -t INT          number of threads (default=16)
-  -n INT          number of views for contrastive multiple-view learning (default=6)
-  -l FLOAT        temperature in loss function (default=0.07 for assemblies with an N50 > 10000, default=0.15 for others)
-  -e INT          embedding size for comebined network (default=2048)
-  -c INT          embedding size for coverage network (default=2048)
   -p INT          standard batch size (default=1024)
+  -x INT          epochs for training process (default=200)
 ```
+
 ## References
 [1] Wang Z, You R, Han H, et al. Effective binning of metagenomic contigs using contrastive multi-view representation learning[J]. Nature Communications, 2024, 15(1): 585.
 
