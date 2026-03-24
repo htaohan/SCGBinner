@@ -15,13 +15,10 @@ help_message () {
 	echo "  -a STR          metagenomic assembly file"
 	echo "  -o STR          output directory"
 	echo "  -b STR          bam files"
-	echo "  -n INT          number of views for contrastive multiple-view learning (default=6)"
 	echo "  -t INT          number of threads (default=16)"
-	echo "  -l FLOAT        temperature in loss function (default=0.07 for assemblies with an N50 > 10000, default=0.15 for others)"
-	echo "  -e INT          embedding size for comebined network (default=2048)"
-	echo "  -c INT          embedding size for coverage network (default=2048)"
 	echo "  -p INT          standard batch size (default=1024)"
-	echo "  -s INT           SCG batch size";}
+	echo "  -x INT          epochs for training process (default=200)"
+}
 
 
 ########################################################################################################
@@ -37,8 +34,8 @@ batch_size=1024
 device_number=0
 remove_single_copy=128
 scg_batch_size=0
-
-while getopts a:o:b:n:t:l:e:c:p:d:r:s: OPT; do
+n_epochs=200
+while getopts a:o:b:n:t:l:e:c:p:d:r:s:x: OPT; do
  case ${OPT} in
   a) contig_file=$(realpath ${OPTARG})
     ;;
@@ -71,6 +68,8 @@ while getopts a:o:b:n:t:l:e:c:p:d:r:s: OPT; do
     ;;
   s) scg_batch_size=${OPTARG}
     ;;
+  x) n_epochs=${OPTARG}
+    ;;
   \?)
 #    printf "[Usage] `date '+%F %T'` -i <INPUT_FILE> -o <OUTPUT_DIR> -o <P
 #RODUCT_CODE> -s <SOFTWARE_VERSION> -t <TYPE>\n" >&2
@@ -93,6 +92,7 @@ if (( sequence_count < ${batch_size} )); then
 fi
 
 echo "Batch size: ${batch_size}"
+echo "Number of epochs: ${n_epochs}"
 
 
 if [ -z "$temperature" ]; then
@@ -163,7 +163,7 @@ if [ -d "$folder" ]; then
         --temperature ${temperature} --emb_szs_forcov ${emb_szs_forcov} \
         --batch_size ${batch_size} --emb_szs ${emb_szs} --n_views ${n_views} \
         --add_model_for_coverage --remove_single_copy ${remove_single_copy} --scg_batch_size ${scg_batch_size} \
-        --output_path ${output_dir}/scgbinner_res --earlystop --addvars --vars_sqrt --num_threads ${num_threads} --device_number ${device_number}
+        --output_path ${output_dir}/scgbinner_res --earlystop --addvars --vars_sqrt --num_threads ${num_threads} --device_number ${device_number} --epochs ${n_epochs}
     else
         echo "No need to run getting representation."
     fi
@@ -174,7 +174,7 @@ else
     --temperature ${temperature} --emb_szs_forcov ${emb_szs_forcov} \
     --batch_size ${batch_size} --emb_szs ${emb_szs} --n_views ${n_views} \
     --add_model_for_coverage --remove_single_copy ${remove_single_copy} --scg_batch_size ${scg_batch_size} \
-    --output_path ${output_dir}/scgbinner_res --earlystop --addvars --vars_sqrt --num_threads ${num_threads} --device_number ${device_number}
+    --output_path ${output_dir}/scgbinner_res --earlystop --addvars --vars_sqrt --num_threads ${num_threads} --device_number ${device_number} --epochs ${n_epochs}
 fi
 
 if [[ $? -ne 0 ]] ; then echo "Something went wrong with running training network. Exiting.";exit 1; fi
