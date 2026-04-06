@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "SCGBinner"
-version = "1.0.0"
+version = "1.0.1"
 description = "SCG-guided metagenomic binning tool"
 authors = [
     {name = "Haitao Han", email= "22110850021@m.fudan.edu.cn"}

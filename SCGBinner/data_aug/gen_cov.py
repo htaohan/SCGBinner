@@ -65,32 +65,40 @@ def gen_bedtools_out(bam_file: str, bam_index: int, out: str, logger):
 
 
 
-def run_gen_bedtools_out(bam_file_path: str, out: str, logger, num_process: int = 10):
+def run_gen_bedtools_out(bam_file_path: str, depth_file_path: str, out: str, logger, num_process: int = 10):
     """
     Run the `gen_bedtools_out` function for multiple BAM files in parallel using multiprocessing.
 
     :param bam_file_path: Directory containing BAM files (str).
+    :param depth_file_path: Directory containing depth files (str).
     :param out: Output directory for storing coverage files (str).
     :param num_process: Number of processes to run in parallel (int, default: 10).
 
     :return: None
     """
-    namelist = bam_file_path.split()
-    namelist.sort()
+    if depth_file_path:
+        namelist = depth_file_path.split()
+        namelist.sort()
+        os.makedirs(out, exist_ok=True)
+        for i, depth_file in enumerate(namelist):
+            subprocess.run(["cp", depth_file, out], check=True)
+    else:
+        namelist = bam_file_path.split()
+        namelist.sort()
 
-    os.makedirs(out, exist_ok=True)
+        os.makedirs(out, exist_ok=True)
 
-    pool = LoggingPool(num_process) if num_process != 0 else LoggingPool()
+        pool = LoggingPool(num_process) if num_process != 0 else LoggingPool()
 
-    for i, bam_file in enumerate(namelist):
-        bam_index = i
-        pool.apply_async(
-            gen_bedtools_out,
-            args=(bam_file, bam_index, out, logger),
-            callback=_checkback)
+        for i, bam_file in enumerate(namelist):
+            bam_index = i
+            pool.apply_async(
+                gen_bedtools_out,
+                args=(bam_file, bam_index, out, logger),
+                callback=_checkback)
 
-    pool.close()
-    pool.join()
+        pool.close()
+        pool.join()
 
 
 # modifed from https://github.com/BigDataBiology/SemiBin/blob/3bad22c58e710d8a5455f7411bc8d4202d557c61/SemiBin/generate_coverage.py#L5
@@ -302,6 +310,7 @@ def run_gen_cov(logger, args):
     logger.info("Generate coverage files from bam files.")
 
     bam_file_path = args.bam_file_path
+    depth_file_path = args.depth_file_path
     # if not bam_file_path.endswith('/'):
     #     bam_file_path = bam_file_path + '/'
 
@@ -310,5 +319,5 @@ def run_gen_cov(logger, args):
 
     out = args.out_augdata_path + 'depth/'
     #生成每个contig的 start 到end的覆盖度
-    run_gen_bedtools_out(bam_file_path, out, logger,num_process=args.num_threads)
+    run_gen_bedtools_out(bam_file_path, depth_file_path, out, logger,num_process=args.num_threads)
     gen_cov_from_bedout(logger, args.out_augdata_path, out, num_aug=args.n_views-1, contig_len=args.contig_len,num_process=args.num_threads)

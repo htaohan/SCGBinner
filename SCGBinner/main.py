@@ -179,8 +179,8 @@ def arguments():
     generate_aug_data_subparsers.add_argument('--out_augdata_path', type=str, help=("The output path to save the augmentation data"))
     generate_aug_data_subparsers.add_argument('--n_views', default=6, type=int,
                                            help='n_views for generating augmentation data.')
-    generate_aug_data_subparsers.add_argument('--bam_file_path', type=str, help=("The path to access the bam files."))
-
+    generate_aug_data_subparsers.add_argument('--bam_file_path', type=str, default=None, help=("The path to access the bam files."))
+    generate_aug_data_subparsers.add_argument('--depth_file_path', type=str, default=None, help=("The path to access the depth files."))
 
     generate_aug_data_subparsers.add_argument('--contig_len', default = 1000, type=int, metavar='N',
                                        help='mininum contig length for augmentation')
