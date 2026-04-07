@@ -31,7 +31,7 @@ scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16
 The MAGs can be found in the scgbinner_res/SCGBINNER_result directory.
 
 ## Time-Saving Tips
-1. If no GPU is available or GPU resources are limited for large datasets, you can speed up the process by setting -x 50 to reduce the training epochs (default: 200), while still producing comparable results.
+1. If no GPU is available or GPU resources are limited for large-scale datasets, you can speed up the process by setting -x 50 to reduce the training epochs (default: 200), while still producing comparable results.
 ```
 scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16 -x 50
 ```
@@ -48,10 +48,10 @@ scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16 --stage clust
 ```
 3. If you have already processed the BAM file using the following command:
 ```
-bedtools genomecov -bga -ibam S1.sorted.bam > S1.sorted.bam.coverage,
-bedtools genomecov -bga -ibam S2.sorted.bam > S2.sorted.bam.coverage,
+bedtools genomecov -bga -ibam S1.sorted.bam > S1.sorted.bam.coverage
+bedtools genomecov -bga -ibam S2.sorted.bam > S2.sorted.bam.coverage
 
-you can directly use the resulting coverage file as input.
+You can directly use the resulting coverage file as input.
 
 scgbinner -a contig_file.fa -o output_path -z "S1.sorted.bam.coverage S2.sorted.bam.coverage" -t 16
 ```
