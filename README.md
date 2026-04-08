@@ -67,6 +67,12 @@ Options:
   -x INT          epochs for training process (default=200)
   --stage STR     execution stage: data_augmentation, training, clustering, all=all stages (default=all)
 ```
+## A test dataset to demo SCGBinner
+We provide a real dataset to demo and test the software.
+You can run SCGBinner on this dataset as follows:
+```
+scgbinner -a contigs.fasta -o output_path -b test.sorted.bam -t 16
+```
 
 ## References
 [1] Wang Z, You R, Han H, et al. Effective binning of metagenomic contigs using contrastive multi-view representation learning[J]. Nature Communications, 2024, 15(1): 585.
