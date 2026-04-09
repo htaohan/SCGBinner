@@ -69,9 +69,10 @@ Options:
 ```
 ## A test dataset to demo SCGBinner
 We provide a real dataset to demo and test the software.
+https://zenodo.org/records/19476565
 You can run SCGBinner on this dataset as follows:
 ```
-scgbinner -a contigs.fasta -o output_path -b test.sorted.bam -t 16
+scgbinner -a contigs.fasta -o output_path -b ERR10905741.1.fastq.sorted.bam -t 16
 ```
 
 ## References
