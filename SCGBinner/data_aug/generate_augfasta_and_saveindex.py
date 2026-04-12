@@ -4,106 +4,109 @@ import os
 import gzip
 import random
 import shutil
-from typing import Dict
+from typing import Dict, Iterator, Tuple
 
-def get_inputsequences(fastx_file: str):
-    """
-    Retrieve sequences from a FASTX file and return them as a dictionary.
 
-    :param fastx_file: Path to the FASTX file (either FASTA or FASTQ).
-    :return: A dictionary where sequence IDs are keys and sequences are values.
-    """
+def _detect_sequence_format(handle):
+    first_char = handle.read(1)
+    handle.seek(0)
+    if first_char == '@':
+        return 'fastq'
+    if first_char == '>':
+        return 'fasta'
+    raise RuntimeError(f"Invalid sequence file: '{handle.name}'")
+
+
+def iter_sequences(fastx_file: str) -> Iterator[Tuple[str, str]]:
     if os.path.getsize(fastx_file) == 0:
-        return {}
+        return
 
-    # Check if gzip-compressed
-    is_gzip = fastx_file.endswith(".gz")
+    is_gzip = fastx_file.endswith('.gz')
     open_func = gzip.open if is_gzip else open
 
-    # Detect file format
-    with open_func(fastx_file, "rt") as f:
-        first_char = f.read(1)
-        file_format = "fastq" if first_char == '@' else "fasta" if first_char == '>' else None
-
-    if not file_format:
-        raise RuntimeError(f"Invalid sequence file: '{fastx_file}'")
-
-    # Read and convert sequences
-    with open_func(fastx_file, "rt") as f:
-        return {record.id: record.seq for record in SeqIO.parse(f, file_format)}
+    with open_func(fastx_file, 'rt') as f:
+        file_format = _detect_sequence_format(f)
+        for record in SeqIO.parse(f, file_format):
+            yield record.id, str(record.seq)
 
 
-def gen_augfasta(seqs: Dict[str, str], augprefix: str, out_file: str,
+def _select_aug_segment(seq: str, augprefix: str, contig_len: int = 1000):
+    cur_seq_len = len(seq)
+    if cur_seq_len < contig_len + 1:
+        return None
+
+    mid = cur_seq_len // 2
+    segment_length = cur_seq_len // 3
+
+    if cur_seq_len >= 3000:
+        if augprefix == 'aug1':
+            start = 0
+            sim_len = mid
+            end = start + sim_len - 1
+        elif augprefix == 'aug2':
+            start = mid
+            sim_len = cur_seq_len - mid
+            end = start + sim_len - 1
+        elif augprefix == 'aug3':
+            start = 0
+            sim_len = segment_length
+            end = start + sim_len - 1
+        elif augprefix == 'aug4':
+            start = segment_length
+            sim_len = segment_length
+            end = start + sim_len - 1
+        elif augprefix == 'aug5':
+            start = segment_length * 2
+            sim_len = cur_seq_len - (2 * segment_length)
+            end = start + sim_len - 1
+        else:
+            return None
+    elif 3000 > cur_seq_len >= 2000:
+        if augprefix == 'aug1':
+            start = 0
+            sim_len = mid
+            end = mid - 1
+        elif augprefix == 'aug2':
+            start = mid
+            sim_len = cur_seq_len - mid
+            end = cur_seq_len - 1
+        else:
+            start = random.randint(0, cur_seq_len - (contig_len + 1))
+            sim_len = random.randint(contig_len, cur_seq_len - start)
+            end = start + sim_len - 1
+    else:
+        start = random.randint(0, cur_seq_len - (contig_len + 1))
+        sim_len = random.randint(contig_len, cur_seq_len - start)
+        end = start + sim_len - 1
+
+    return seq[start:end + 1], start, end, sim_len
+
+
+def gen_augfasta(fastx_file: str, augprefix: str, out_file: str,
                   contig_len: int = 1000):
     """
     Generate augmented sequences and save them to a FASTA file along with sequence information.
 
-    :param seqs: A dictionary of input sequences where keys are sequence IDs, and values are sequences.
+    :param fastx_file: Path to the input FASTA/FASTQ file.
     :param augprefix: A prefix used in the augmented sequence IDs.
     :param out_file: Path to the output FASTA file.
-    :param p: Proportion of the original sequence to include in the augmented sequences (default is None).
     :param contig_len: Minimum length of the original sequence required for augmentation (default is 1000).
     """
-    seqkeys = [k for k, v in seqs.items() if len(v) >= contig_len + 1]
-    re_seqs = {}
     aug_seq_info = []
-    for seqid in seqkeys:
-        cur_seq_len = len(seqs[seqid])
-        mid = cur_seq_len // 2
-        segment_lenth = cur_seq_len // 3
-        if cur_seq_len >= 3000:
-            if augprefix == 'aug1':
-                start = 0
-                sim_len = mid
-                end = start + sim_len - 1
-            elif augprefix == 'aug2':
-                start = mid
-                sim_len = cur_seq_len - mid
-                end = start + sim_len - 1
-            elif augprefix == 'aug3':
-                start = 0
-                sim_len = segment_lenth
-                end = start + sim_len - 1
-            elif augprefix == 'aug4':
-                start = segment_lenth
-                sim_len = segment_lenth
-                end = start + sim_len - 1
-            elif augprefix == 'aug5':
-                start = segment_lenth * 2
-                sim_len = cur_seq_len - (2 * segment_lenth)
-                end = start + sim_len - 1
-        elif 3000 > cur_seq_len >= 2000:
-            if augprefix == 'aug1':
-                start = 0
-                sim_len = mid
-                end = mid - 1
-            elif augprefix == 'aug2':
-                start = mid
-                sim_len = cur_seq_len - mid
-                end = cur_seq_len - 1
-            else:
-                start = random.randint(0, len(seqs[seqid]) - (contig_len + 1))
-                sim_len = random.randint(contig_len, len(seqs[seqid]) - start)
-                end = start + sim_len - 1
-                # gen_seqs_dict[genome_name+"_sim_"+str(sim_count)] =seqs[seqid][start:end+1]
-
-        elif 2000 > cur_seq_len:
-            start = random.randint(0, len(seqs[seqid]) - (contig_len + 1))
-            sim_len = random.randint(contig_len, len(seqs[seqid]) - start)
-            end = start + sim_len - 1
-            # gen_seqs_dict[genome_name+"_sim_"+str(sim_count)] =seqs[seqid][start:end+1]
-        sequence = str(seqs[seqid][start:end + 1])
-        re_seqs[seqid] = sequence
-        aug_seq_info.append((seqid, start, end, sim_len))
-
+    with open(out_file, 'w') as outfile:
+        for seqid, seq in iter_sequences(fastx_file):
+            selected = _select_aug_segment(seq, augprefix, contig_len)
+            if selected is None:
+                continue
+            sequence, start, end, sim_len = selected
+            outfile.write(f'>{seqid}\n{sequence}\n')
+            aug_seq_info.append((seqid, start, end, sim_len))
 
     aug_seq_info_out_file = f"{out_file}.aug_seq_info.tsv"
-
     with open(aug_seq_info_out_file, 'w') as afile:
         afile.write('seqid\tstart\tend\tlength\n')
         for sid, start, end, length in aug_seq_info:
             afile.write(f'{sid}\t{start}\t{end}\t{length}\n')
-    return re_seqs
 
 
 def run_gen_augfasta(logger, args):
@@ -116,22 +119,26 @@ def run_gen_augfasta(logger, args):
     contig_len = args.contig_len
     num_threads = args.num_threads
 
-    outdir = out_path + '/aug0'
-    os.makedirs(outdir)
-    out_file = outdir + '/sequences_aug0.fasta'
-    shutil.copyfile(fasta_file, out_file)
+    from .gen_kmer import run_gen_kmer_from_fasta
 
-    from .gen_kmer import run_gen_kmer
+    outdir = os.path.join(out_path, 'aug0')
+    os.makedirs(outdir, exist_ok=True)
+    out_file = os.path.join(outdir, 'sequences_aug0.fasta')
+    if fasta_file.endswith('.gz'):
+        with gzip.open(fasta_file, 'rt') as inf, open(out_file, 'wt') as outf:
+            shutil.copyfileobj(inf, outf)
+    else:
+        try:
+            os.link(fasta_file, out_file)
+        except OSError:
+            shutil.copyfile(fasta_file, out_file)
 
-    seqs = get_inputsequences(fasta_file)
-    run_gen_kmer(seqs, out_file, 0, 4, num_threads)
+    run_gen_kmer_from_fasta(out_file, 0, 4, num_threads)
     for i in range(num_aug):
-        outdir = out_path + '/aug' + str(i + 1)
-        os.makedirs(outdir)
-        logger.info("aug:\t" + str(i+1))
+        outdir = os.path.join(out_path, f'aug{i + 1}')
+        os.makedirs(outdir, exist_ok=True)
+        logger.info('aug:\t' + str(i + 1))
 
-        out_file = outdir + '/sequences_aug' + str(i + 1) + '.fasta'
-        #生成aug的fasta和 fasta_seq_info
-        re_seqs = gen_augfasta(seqs, 'aug' + str(i + 1), out_file,  contig_len=contig_len)
-
-        run_gen_kmer(re_seqs, out_file, 0, 4, num_threads)
+        out_file = os.path.join(outdir, f'sequences_aug{i + 1}.fasta')
+        gen_augfasta(fasta_file, f'aug{i + 1}', out_file, contig_len=contig_len)
+        run_gen_kmer_from_fasta(out_file, 0, 4, num_threads)

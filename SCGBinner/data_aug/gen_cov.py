@@ -52,14 +52,13 @@ def gen_bedtools_out(bam_file: str, bam_index: int, out: str, logger):
     bam_name = os.path.split(bam_file)[-1] + '_{}'.format(bam_index)
     bam_depth = os.path.join(out, '{}_depth.txt'.format(bam_name))
 
-    result = subprocess.run(
-        ['bedtools', 'genomecov', '-bga', '-ibam', bam_file],
-        capture_output=True,
-        check=True,
-        text=True
-    )
     with open(bam_depth, 'w', buffering=1 << 20) as f:
-        f.write(result.stdout)
+        subprocess.run(
+            ['bedtools', 'genomecov', '-bga', '-ibam', bam_file],
+            stdout=f,
+            check=True,
+            text=True
+        )
 
     return (bam_file, logger)
 
