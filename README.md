@@ -16,6 +16,7 @@ pip install .
 ```
 ## Run SCGBinner
 SCGBinner is recommended to be run in a GPU environment.
+If no GPU is available or GPU resources are limited for large-scale datasets, see the Time-Saving Tips.
 ```
 conda activate SCGBinner
 ########################## Run SCGBinner using single-coverage ##########################
