@@ -80,7 +80,12 @@ def run_gen_bedtools_out(bam_file_path: str, depth_file_path: str, out: str, log
         namelist.sort()
         os.makedirs(out, exist_ok=True)
         for i, depth_file in enumerate(namelist):
-            subprocess.run(["cp", depth_file, out], check=True)
+            base = os.path.basename(depth_file)
+            if depth_file.endswith(".gz"):
+                target = os.path.join(out, f"{base[:-3]}_depth.txt.gz")
+            else:
+                target = os.path.join(out, f"{base}_depth.txt")
+            subprocess.run(["ln", "-s", depth_file, target], check=True)
     else:
         namelist = bam_file_path.split()
         namelist.sort()
@@ -118,7 +123,9 @@ def calculate_coverage_samplebyindex(depth_file: str, augpredix: str, aug_seq_in
     mean_coverage = []
     var_coverage = []
 
-    with open(depth_file) as f:
+    import gzip
+    open_func = gzip.open if depth_file.endswith(".gz") else open
+    with open_func(depth_file, "rt") as f:
         for contig_name, group in groupby(f, key=lambda x: x.split('\t', 1)[0]):
             if contig_name not in aug_seq_info_dict:
                 continue
@@ -178,11 +185,12 @@ def calculate_coverage(depth_file: str, logger, edge: int = 0,
 
     :return: None
     """
+    import gzip
     mean_coverage = []
     var_coverage = []
     contigs = []
-
-    with open(depth_file) as f:
+    open_func = gzip.open if depth_file.endswith(".gz") else open
+    with open_func(depth_file, "rt") as f:
         for contig_name, group in groupby(f, key=lambda x: x.split('\t', 1)[0]):
             values = []
             for line in group:
@@ -239,7 +247,7 @@ def gen_cov_from_bedout(logger, out_path: str, depth_file_path: str,
     filenames = os.listdir(depth_file_path)
     namelist = []
     for filename in filenames:
-        if filename.endswith('_depth.txt'):
+        if filename.endswith(('_depth.txt', '_depth.txt.gz')):
             namelist.append(filename)
 
     namelist.sort()
@@ -320,3 +328,4 @@ def run_gen_cov(logger, args):
     #生成每个contig的 start 到end的覆盖度
     run_gen_bedtools_out(bam_file_path, depth_file_path, out, logger,num_process=args.num_threads)
     gen_cov_from_bedout(logger, args.out_augdata_path, out, num_aug=args.n_views-1, contig_len=args.contig_len,num_process=args.num_threads)
+
