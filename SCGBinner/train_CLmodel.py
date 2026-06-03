@@ -124,9 +124,11 @@ def train_CLmodel(logger, args):
         train_dataset = torch.utils.data.TensorDataset(*[dataset[i][np.array(length_weight) >= args.contig_len]
                                                          for i in range(args.n_views)])
 
+    drop_last_value = (len(train_dataset) > args.batch_size)
+    
     train_loader = torch.utils.data.DataLoader(
         train_dataset, batch_size=args.batch_size, shuffle=True,
-        num_workers=args.workers, pin_memory=True, drop_last=True)
+        num_workers=args.workers, pin_memory=True, drop_last=drop_last_value)
 
     # Set embedder model.
     if args.kmer_model_path == 'empty':
