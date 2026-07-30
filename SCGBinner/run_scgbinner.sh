@@ -5,7 +5,7 @@
 # Author of pipeline: Haitao Han.
 # For questions, bugs, and suggestions, contact me at 22110850021@m.fudan.edu.cn
 ##############################################################################################################################################################
-VERSION="1.0.2"
+VERSION="1.0.3"
 
 help_message () {
   echo ""
