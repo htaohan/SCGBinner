@@ -3,8 +3,8 @@ Metagenomic binning method
 ## Install SCGBinner
 Install the dependecies of SCGBinner
 ```
-conda create -n SCGBinner python=3.9
-conda activate SCGBinner
+mamba create -n SCGBinner python=3.9
+mamba activate SCGBinner
 mamba install biopython numpy=1.19 scipy igraph leidenalg joblib pandas=1.4 scikit-learn pyyaml tensorboard tqdm hnswlib atomicwrites bedtools
 pip install torch==2.0.0 torchvision==0.15.1 torchaudio==2.0.1 --index-url https://download.pytorch.org/whl/cu118
 ```
@@ -71,10 +71,10 @@ Options:
 ```
 ## A test dataset to demo SCGBinner
 We provide a real dataset to demo and test the software.
-https://zenodo.org/records/19476565
+[https://zenodo.org/records/19476565](https://zenodo.org/records/21650609)
 You can run SCGBinner on this dataset as follows:
 ```
-scgbinner -a contigs.fasta -o output_path -b ERR10905741.1.fastq.sorted.bam -t 16
+scgbinner -a contigs.fasta -o output_path -b "test.sorted.bam" -t 16
 ```
 
 ## References
