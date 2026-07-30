@@ -71,11 +71,11 @@ scgbinner -a contig_file.fa -o output_path -z "S1.sorted.bam.coverage.gz S2.sort
 mamba activate SCGBinner
 split_contigs -a contig_file.fa -o output_path/contigs_splited.fasta
 
-###########Get output of CoverM.
+##############################Get output of CoverM##############################
 mamba activate CoverM
-#####Generate single-coverage output from a HiFi sample.
+# Generate single-coverage output from a HiFi sample.
 coverm contig --methods metabat --single S1.fastq -p minimap2-hifi -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
-#####Generate multi-coverage output from HiFi samples.
+# Generate multi-coverage output from HiFi samples.
 coverm contig --methods metabat --single S1.fastq S2.fastq -p minimap2-hifi -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
 # Generate single-coverage output from a Nanopore sample.
 coverm contig --methods metabat --single S1.fastq -p minimap2-ont -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
