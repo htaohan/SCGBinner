@@ -58,6 +58,33 @@ You can directly use the resulting coverage file as input.
 scgbinner -a contig_file.fa -o output_path -z "S1.sorted.bam.coverage S2.sorted.bam.coverage" -t 16
 ```
 
+## Additional Supported Coverage Information Formats
+### Bedtools-style output 
+```
+###This can save substantial storage space for large-scale multi-coverage binning.
+bedtools genomecov -bga -ibam S1.sorted.bam | gzip > S1.sorted.bam.coverage.gz
+bedtools genomecov -bga -ibam S2.sorted.bam | gzip > S2.sorted.bam.coverage.gz
+scgbinner -a contig_file.fa -o output_path -z "S1.sorted.bam.coverage.gz S2.sorted.bam.coverage.gz" -t 16
+```
+### CoverM-style output
+```
+###########[CoverM](https://github.com/wwood/CoverM) is a fast tool for calculating read coverage.
+###########Since CoverM does not provide mapping information for each position of the contigs, contig splitting is required for data augmentation.
+mamba activate SCGBinner
+split_contigs -a contig_file.fa -o output_path/contigs_splited.fasta
+
+###########Get output of CoverM.
+mamba activate CoverM
+#####Generate single-coverage output from a HiFi sample.
+coverm contig --methods metabat --single S1.fastq -p minimap2-hifi -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
+#####Generate multi-coverage output from HiFi samples.
+coverm contig --methods metabat --single S1.fastq S2.fastq -p minimap2-hifi -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
+#####Generate single-coverage output from a Nanopore sample.
+coverm contig --methods metabat --single S1.fastq -p minimap2-ont -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
+#####Generate multi-coverage output from Nanopore samples.
+coverm contig --methods metabat --single S1.fastq S2.fastq -p minimap2-ont -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
+```
+
 ## Options
 ```
 Options:
