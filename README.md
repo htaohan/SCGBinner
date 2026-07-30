@@ -33,34 +33,6 @@ scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16
 ## Output
 The MAGs can be found in the scgbinner_res/SCGBINNER_result directory.
 
-## How to Generate BAM Files
-```bash
-# PacBio Hifi reads
-minimap2 -t 16 -ax map-hifi contig_file.fa S1_hifi.fastq | \
-        samtools view -@ 16 -b - | \
-        samtools sort -@ 16 -o S1.sorted.bam -
-
-samtools index S1.sorted.bam
-# PacBio Nanopore reads
-minimap2 -t 16 -ax map-ont contig_file.fa S1_nano.fastq | \
-        samtools view -@ 16 -b - | \
-        samtools sort -@ 16 -o S1.sorted.bam -
-
-samtools index S1.sorted.bam
-
-# Illumina reads
-bowtie2-build --threads 16 contig_file.fa contig_file.index
-
-bowtie2 --threads 16 -q --fr \
-    -x contig_file.index \
-    -1 S1_illu_1.fastq \
-    -2 S1_illu_2.fastq | \
-    samtools view -@ 16 -b - | \
-    samtools sort -@ 16 -o S1.sorted.bam -
-
-samtools index S1.sorted.bam
-```
-
 ## Time-Saving Tips
 1. If no GPU is available or GPU resources are limited for large-scale datasets, you can speed up the process by setting -x 50 to reduce the training epochs (default: 200), while still producing comparable results.
 ```bash
@@ -129,6 +101,35 @@ We provide a real dataset to demo and test the software.
 You can run SCGBinner on this dataset as follows:
 ```
 scgbinner -a contigs.fasta -o output_path -b "test.sorted.bam" -t 16
+```
+
+## How to Generate BAM Files
+```bash
+# PacBio Hifi reads
+minimap2 -t 16 -ax map-hifi contig_file.fa S1_hifi.fastq | \
+        samtools view -@ 16 -b - | \
+        samtools sort -@ 16 -o S1.sorted.bam -
+
+samtools index S1.sorted.bam
+
+# PacBio Nanopore reads
+minimap2 -t 16 -ax map-ont contig_file.fa S1_nano.fastq | \
+        samtools view -@ 16 -b - | \
+        samtools sort -@ 16 -o S1.sorted.bam -
+
+samtools index S1.sorted.bam
+
+# Illumina reads
+bowtie2-build --threads 16 contig_file.fa contig_file.index
+
+bowtie2 --threads 16 -q --fr \
+    -x contig_file.index \
+    -1 S1_illu_1.fastq \
+    -2 S1_illu_2.fastq | \
+    samtools view -@ 16 -b - | \
+    samtools sort -@ 16 -o S1.sorted.bam -
+
+samtools index S1.sorted.bam
 ```
 
 ## References
