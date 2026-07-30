@@ -46,15 +46,6 @@ scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16 --stage train
 # Clustering
 scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16 --stage clustering
 ```
-3. If you have already processed the BAM file using the following command:
-```bash
-bedtools genomecov -bga -ibam S1.sorted.bam > S1.sorted.bam.coverage
-bedtools genomecov -bga -ibam S2.sorted.bam > S2.sorted.bam.coverage
-
-You can directly use the resulting coverage file as input.
-
-scgbinner -a contig_file.fa -o output_path -z "S1.sorted.bam.coverage S2.sorted.bam.coverage" -t 16
-```
 
 ## Additional Supported Coverage Information Formats
 ### Bedtools-style output 
