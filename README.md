@@ -67,7 +67,7 @@ bedtools genomecov -bga -ibam S2.sorted.bam | gzip > S2.sorted.bam.coverage.gz
 scgbinner -a contig_file.fa -o output_path -z "S1.sorted.bam.coverage.gz S2.sorted.bam.coverage.gz" -t 16
 ```
 ### CoverM-style output
-```
+```bash
 ###########[CoverM](https://github.com/wwood/CoverM) is a fast tool for calculating read coverage.
 ###########Since CoverM does not provide mapping information for each position of the contigs, contig splitting is required for data augmentation.
 mamba activate SCGBinner
