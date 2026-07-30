@@ -112,7 +112,7 @@ minimap2 -t 16 -ax map-hifi contig_file.fa S1_hifi.fastq | \
 
 samtools index S1.sorted.bam
 
-# PacBio Nanopore reads
+# Nanopore reads
 minimap2 -t 16 -ax map-ont contig_file.fa S1_nano.fastq | \
         samtools view -@ 16 -b - | \
         samtools sort -@ 16 -o S1.sorted.bam -
