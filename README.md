@@ -43,8 +43,7 @@ scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16 -x 50
 scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16 --stage data_augmentation
 # Training (only this stage needs a GPU)
 scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16 --stage training
-
-########################## Clustering ##########################
+# Clustering
 scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16 --stage clustering
 ```
 3. If you have already processed the BAM file using the following command:
@@ -60,15 +59,15 @@ scgbinner -a contig_file.fa -o output_path -z "S1.sorted.bam.coverage S2.sorted.
 ## Additional Supported Coverage Information Formats
 ### Bedtools-style output 
 ```bash
-###This can save substantial storage space for large-scale multi-coverage binning.
+# This can save substantial storage space for large-scale multi-coverage binning.
 bedtools genomecov -bga -ibam S1.sorted.bam | gzip > S1.sorted.bam.coverage.gz
 bedtools genomecov -bga -ibam S2.sorted.bam | gzip > S2.sorted.bam.coverage.gz
 scgbinner -a contig_file.fa -o output_path -z "S1.sorted.bam.coverage.gz S2.sorted.bam.coverage.gz" -t 16
 ```
 ### CoverM-style output
 ```bash
-###########[CoverM](https://github.com/wwood/CoverM) is a fast tool for calculating read coverage.
-###########Since CoverM does not provide mapping information for each position of the contigs, contig splitting is required for data augmentation.
+# [CoverM](https://github.com/wwood/CoverM) is a fast tool for calculating read coverage.
+# Since CoverM does not provide mapping information for each position of the contigs, contig splitting is required for data augmentation.
 mamba activate SCGBinner
 split_contigs -a contig_file.fa -o output_path/contigs_splited.fasta
 
