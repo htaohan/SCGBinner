@@ -74,13 +74,13 @@ split_contigs -a contig_file.fa -o output_path/contigs_splited.fasta
 ##############################Get output of CoverM##############################
 mamba activate CoverM
 # Generate single-coverage output from a HiFi sample.
-coverm contig --methods metabat --single S1.fastq -p minimap2-hifi -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
+coverm contig --methods metabat --single S1_hifi.fastq -p minimap2-hifi -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
 # Generate multi-coverage output from HiFi samples.
-coverm contig --methods metabat --single S1.fastq S2.fastq -p minimap2-hifi -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
+coverm contig --methods metabat --single S1_hifi.fastq S2_hifi.fastq -p minimap2-hifi -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
 # Generate single-coverage output from a Nanopore sample.
-coverm contig --methods metabat --single S1.fastq -p minimap2-ont -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
+coverm contig --methods metabat --single S1_nano.fastq -p minimap2-ont -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
 # Generate multi-coverage output from Nanopore samples.
-coverm contig --methods metabat --single S1.fastq S2.fastq -p minimap2-ont -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
+coverm contig --methods metabat --single S1_nano.fastq S2_nano.fastq -p minimap2-ont -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
 ```
 
 ## Options
