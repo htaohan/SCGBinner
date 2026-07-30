@@ -48,7 +48,7 @@ scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16 --stage train
 scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16 --stage clustering
 ```
 
-## Additional Supported Coverage Information Formats
+## Additional supported coverage information formats
 ### Bedtools-style output 
 This can save substantial storage space for large-scale multi-coverage binning.
 ```bash
