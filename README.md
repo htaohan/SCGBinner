@@ -33,7 +33,7 @@ scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16
 ## Output
 The MAGs can be found in the scgbinner_res/SCGBINNER_result directory.
 
-## Time-Saving Tips
+## Time-saving tips
 1. If no GPU is available or GPU resources are limited for large-scale datasets, you can speed up the process by setting -x 50 to reduce the training epochs (default: 200), while still producing comparable results.
 ```bash
 scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16 -x 50
