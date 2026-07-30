@@ -81,6 +81,10 @@ coverm contig --methods metabat --single S1_hifi.fastq S2_hifi.fastq -p minimap2
 coverm contig --methods metabat --single S1_nano.fastq -p minimap2-ont -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
 # Generate multi-coverage output from Nanopore samples.
 coverm contig --methods metabat --single S1_nano.fastq S2_nano.fastq -p minimap2-ont -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
+# Generate single-coverage output from an Illumina sample.
+coverm contig --methods metabat -1 S1_illu_1.fastq -2 S1_illu_2.fastq -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
+# Generate single-coverage output from Illumina samples.
+coverm contig --methods metabat -1 S1_illu_1.fastq S2_illu_1.fastq -2 S1_illu_2.fastq S2_illu_1.fastq -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
 ```
 
 ## Options
