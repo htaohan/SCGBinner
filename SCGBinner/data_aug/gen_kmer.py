@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# modified from https://github.com/ziyewang/COMEBin
 from __future__ import print_function
 import gzip
 import os

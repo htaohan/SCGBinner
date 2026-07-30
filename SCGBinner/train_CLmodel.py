@@ -1,3 +1,4 @@
+# modified from https://github.com/ziyewang/COMEBin
 import torch
 import torch.backends.cudnn as cudnn
 import torch.nn as nn
@@ -171,7 +172,8 @@ def train_CLmodel(logger, args):
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs, eta_min=0,
                                                            last_epoch=-1)
 
-    simclr = SimCLR(model=model, optimizer=optimizer, scheduler=scheduler, args=args)
+    simclr = SimCLR(logger=logger, model=model, optimizer=optimizer, scheduler=scheduler, args=args)
     simclr.train_addpretrain(train_loader, s_loader, dataset, namelist)
 
     logger.info("Finish training.")
+

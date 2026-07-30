@@ -1,3 +1,4 @@
+# modified from https://github.com/ziyewang/COMEBin
 import logging
 import copy
 import os
@@ -329,8 +330,8 @@ def run_get_final_result(logger, args, num_threads):
     result_row = df_c.sort_values(by=['sum_cont5','num_905', 'num_9010',  'num_705', 'num_7010' \
         , 'num_505', 'num_5010'], ascending=False).iloc[0]
     best_method = result_row.name
-    logger.info("\n" + df_c.to_string())
-    logger.info('Final result:\t'+args.output_path + '/cluster_res/'+best_method)
+    #logger.info("\n" + df_c.to_string())
+    logger.info('Best result:\t'+args.output_path + '/cluster_res/'+best_method)
     #filter_small_bins(logger, args.contig_file, args.output_path + '/cluster_res/' + best_method, args)
 
     ################################
@@ -437,6 +438,7 @@ def run_get_final_result(logger, args, num_threads):
                     contig_dict,
                     minfasta=minfasta,
                     output_tag=None)
+    logger.info('Finish Binning! The resulted MAGs are in: ' + args.output_path + '/SCGBINNER_result/')
 
 
 
@@ -525,4 +527,5 @@ def get_best_bin(Top_methods, bins, methodid_2_clusterlist_F1list_contalist):
         if max_F1 > 0:  # if there is a bin with F1 > 0
             return max_bin.copy(), max_method_id, max_cluster_id
     return None, None, None
+
 

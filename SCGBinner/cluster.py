@@ -1,3 +1,6 @@
+# modified from https://github.com/ziyewang/COMEBin
+import sys
+
 import hnswlib
 import leidenalg
 import numpy as np
@@ -26,7 +29,7 @@ logger.setLevel(logging.INFO)
 # logging
 formatter = logging.Formatter('%(asctime)s - %(message)s')
 
-console_hdr = logging.StreamHandler()
+console_hdr = logging.StreamHandler(sys.stdout)
 console_hdr.setFormatter(formatter)
 
 logger.addHandler(console_hdr)
@@ -369,7 +372,9 @@ def cluster(logger, args, prefix=None):
         time_end = time.time()
         logger.info('knn query time cost:\t' +str(time_end - time_start) + "s")
 
-        with multiprocessing.Pool(num_workers, initializer=init_worker,
+        task_timeout = 86400  # 1 day in seconds
+        results = []
+        with multiprocessing.Pool(num_workers, maxtasksperchild=1, initializer=init_worker,
                                   initargs=(shared_emb, norm_embeddings.shape, c_float,
                                             shared_ann_idx, ann_neighbor_indices.shape, c_int32,
                                             shared_ann_dist, ann_distances.shape, c_float)) as pool:
@@ -380,12 +385,30 @@ def cluster(logger, args, prefix=None):
                             bandwidth) + '_res_maxedges' + str(max_edges) + 'respara_'+str(para)+'_partgraph_ratio_'+str(partgraph_ratio)+'.tsv'
 
                         if not (os.path.exists(output_file)):
-                            pool.apply_async(
+                            result = pool.apply_async(
                                 run_leiden,
                                 (output_file, namelist, length_weight, max_edges, bandwidth, 'l2', initial_list,
                                  is_membership_fixed, para, partgraph_ratio)
                             )
+                            results.append((output_file, result))
             pool.close()
+
+            for output_file, result in results:
+                try:
+                    result.get(timeout=task_timeout)
+                except multiprocessing.TimeoutError:
+                    logger.error('Leiden task timed out for %s after %s seconds.', output_file, task_timeout)
+                    logger.error('This may be caused by excessive memory usage or a hung child process.')
+                    logger.error('Please increase available memory or reduce threads.')
+                    pool.terminate()
+                    pool.join()
+                    raise RuntimeError('Leiden task timed out; possible out-of-memory.')
+                except Exception as exc:
+                    logger.error('Leiden task failed for %s: %s', output_file, exc)
+                    logger.error('Please increase available memory or reduce threads.')
+                    pool.terminate()
+                    pool.join()
+                    raise
             pool.join()
         logger.info('multiprocess Done')
 
@@ -406,5 +429,6 @@ def init_worker(shared_emb, emb_shape, emb_type,
         _emb_array = np.frombuffer(shared_emb, dtype=np.float32).reshape(emb_shape)
     _ann_idx_array = np.frombuffer(shared_ann_idx, dtype=np.int32).reshape(ann_idx_shape)
     _ann_dist_array = np.frombuffer(shared_ann_dist, dtype=np.float32).reshape(ann_dist_shape)
+
 
 

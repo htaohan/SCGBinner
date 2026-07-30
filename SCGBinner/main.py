@@ -1,12 +1,13 @@
+# modified from https://github.com/ziyewang/COMEBin
 import argparse
 import logging
 import os
+import sys
 import pandas as pd
 
 from .SCGBinner_version import __version__ as ver
 from .train_CLmodel import train_CLmodel
 from .cluster import cluster
-
 
 def arguments():
     """
@@ -160,8 +161,6 @@ def arguments():
                         help='max batch size of SCG batch')
 
 
-
-
     #############################################################################################
     ############################################ cluster NoContrast #####################################
     ### Command-line arguments and options for running the SCGBinner using the original features.
@@ -181,6 +180,7 @@ def arguments():
                                            help='n_views for generating augmentation data.')
     generate_aug_data_subparsers.add_argument('--bam_file_path', type=str, default=None, help=("The path to access the bam files."))
     generate_aug_data_subparsers.add_argument('--depth_file_path', type=str, default=None, help=("The path to access the depth files."))
+    generate_aug_data_subparsers.add_argument('--coverm_file', type=str, default=None, help=("The path to access the coverm file."))
 
     generate_aug_data_subparsers.add_argument('--contig_len', default = 1000, type=int, metavar='N',
                                        help='mininum contig length for augmentation')
@@ -233,8 +233,6 @@ def arguments():
     args = parser.parse_args()
     return args
 
-
-
 def main():
     """
     The main function of the SCGBinner program.
@@ -252,7 +250,7 @@ def main():
     logger.setLevel(logging.INFO)
 
     formatter = logging.Formatter('%(asctime)s - %(message)s')
-    console_hdr = logging.StreamHandler()
+    console_hdr = logging.StreamHandler(sys.stdout)
     console_hdr.setFormatter(formatter)
 
     logger.addHandler(console_hdr)
@@ -305,4 +303,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 

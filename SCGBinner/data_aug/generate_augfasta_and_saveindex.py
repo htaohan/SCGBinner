@@ -1,3 +1,4 @@
+# modified from https://github.com/ziyewang/COMEBin
 from Bio import SeqIO
 import mimetypes
 import os

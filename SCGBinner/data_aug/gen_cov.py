@@ -2,7 +2,7 @@
 import multiprocessing
 import traceback
 from multiprocessing.pool import Pool
-
+import math
 import os
 import subprocess
 from atomicwrites import atomic_write
@@ -312,12 +312,55 @@ def read_aug_seq_info(aug_seq_info_out_file):
 
     return aug_seq_info_dict
 
+def process_coverage_file(coverm_file, out_path, num_views):
+    os.makedirs(out_path, exist_ok=True)
+
+    mean_files = []
+    var_files = []
+
+    for aug in range(num_views):
+        mean_files.append(
+            open(os.path.join(out_path,
+                              f"aug{aug}_datacoverage_mean.tsv"), "w"))
+        var_files.append(
+            open(os.path.join(out_path,
+                              f"aug{aug}_datacoverage_var.tsv"), "w"))
+
+    with open(coverm_file) as fin:
+
+        header = fin.readline().rstrip("\n").split("\t")
+        mean_header = [header[0]] + header[3:-1:2]
+        var_header = [header[0]] + header[4::2]
+
+        for f in mean_files:
+            f.write("\t".join(mean_header) + "\n")
+
+        for f in var_files:
+            f.write("\t".join(var_header) + "\n")
+
+        for line in fin:
+            cols = line.rstrip("\n").split("\t")
+            contig = cols[0]
+            # 找aug编号
+            pos = contig.rfind("_aug")
+            aug = int(contig[pos + 4:])
+            contig = contig[:pos]
+
+            mean_row = [contig] + cols[3:-1:2]
+            var_row = [contig] + [f"{math.sqrt(float(x)):.6f}" for x in cols[4::2]]
+
+            mean_files[aug].write("\t".join(mean_row) + "\n")
+            var_files[aug].write("\t".join(var_row) + "\n")
+
+    for f in mean_files + var_files:
+        f.close()
 
 def run_gen_cov(logger, args):
     logger.info("Generate coverage files from bam files.")
 
     bam_file_path = args.bam_file_path
     depth_file_path = args.depth_file_path
+    coverm_file = args.coverm_file
     # if not bam_file_path.endswith('/'):
     #     bam_file_path = bam_file_path + '/'
 
@@ -326,6 +369,10 @@ def run_gen_cov(logger, args):
 
     out = args.out_augdata_path + 'depth/'
     #生成每个contig的 start 到end的覆盖度
-    run_gen_bedtools_out(bam_file_path, depth_file_path, out, logger,num_process=args.num_threads)
-    gen_cov_from_bedout(logger, args.out_augdata_path, out, num_aug=args.n_views-1, contig_len=args.contig_len,num_process=args.num_threads)
+    if coverm_file:
+        process_coverage_file(coverm_file, args.out_augdata_path, args.n_views)
+    else:
+        run_gen_bedtools_out(bam_file_path, depth_file_path, out, logger,num_process=args.num_threads)
+        gen_cov_from_bedout(logger, args.out_augdata_path, out, num_aug=args.n_views-1, contig_len=args.contig_len,num_process=args.num_threads)
+
 

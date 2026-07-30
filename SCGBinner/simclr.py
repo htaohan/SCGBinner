@@ -1,7 +1,7 @@
 # modified from https://github.com/sthalles/SimCLR
 import logging
 import os
-
+import sys
 import torch
 import torch.nn.functional as F
 from torch.cuda.amp import GradScaler, autocast
@@ -26,6 +26,7 @@ class SimCLR(object):
         self.model = kwargs['model'].to(self.args.device)
         self.optimizer = kwargs['optimizer']
         self.scheduler = kwargs['scheduler']
+        self.logger = kwargs['logger']
         self.writer = SummaryWriter(log_dir=self.args.output_path)
         logging.basicConfig(filename=os.path.join(self.args.output_path, 'training.log'), level=logging.DEBUG)
         self.criterion = torch.nn.CrossEntropyLoss().to(self.args.device)
@@ -100,7 +101,8 @@ class SimCLR(object):
         #split single copy
         total_batches = len(s_loader)
 
-
+        use_tqdm = sys.stderr.isatty()
+ 
         logging.info(f"total_SCG_batches: {total_batches}")
         #
         for epoch_counter in range(self.args.epochs):
@@ -109,7 +111,7 @@ class SimCLR(object):
             num_batches = 0
 
             # modified
-            for contig_features in tqdm(train_loader):
+            for contig_features in tqdm(train_loader, disable=not use_tqdm):
                 contig_features = torch.cat(contig_features, dim=0)
 
                 contig_features = contig_features.to(self.args.device)
@@ -133,7 +135,7 @@ class SimCLR(object):
 
             #single_copy_constraint
             if total_batches != 0:
-                for i, contig_features in enumerate(tqdm(s_loader)):
+                for i, contig_features in enumerate(tqdm(s_loader, disable=not use_tqdm)):
                     #print(contig_features[0].shape)
                     #print(contig_features)
                     contig_features = torch.cat(contig_features, dim=0)
@@ -161,6 +163,7 @@ class SimCLR(object):
             avg_loss = epoch_loss_sum / num_batches
             avg_top1 = epoch_top1_sum / num_batches
             logging.debug(f"Epoch: {epoch_counter}\tLoss: {avg_loss:.4f}\tTop1 accuracy: {avg_top1:.2f}")
+            self.logger.info(f"Finish traninning for epoch {epoch_counter}.\tLoss: {avg_loss:.4f}")
 
             if self.args.earlystop:
                 if epoch_counter >= 10 and avg_top1 > 99.0:
@@ -205,4 +208,5 @@ class SimCLR(object):
             # embeddings_df = pd.DataFrame(covout, index=namelist)
             # outfile = self.args.output_path + '/covembeddings.tsv'
             # embeddings_df.to_csv(outfile, sep='\t', header=True)
+
 

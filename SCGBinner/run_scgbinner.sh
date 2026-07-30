@@ -37,7 +37,7 @@ remove_single_copy=128
 scg_batch_size=0
 n_epochs=200
 stage="all"
-while getopts a:o:b:n:t:l:e:c:p:d:r:s:x:-:z: OPT; do
+while getopts a:o:b:n:t:l:e:c:p:d:r:s:x:-:z:m: OPT; do
  case ${OPT} in
   a) contig_file=$(realpath ${OPTARG})
     ;;
@@ -81,6 +81,8 @@ while getopts a:o:b:n:t:l:e:c:p:d:r:s:x:-:z: OPT; do
     done
     depth_file_path="${depth_file_paths%% }"
     ;;
+  m) coverm_file=$(realpath ${OPTARG})
+    ;;
   -)
     case "${OPTARG}" in
       stage)
@@ -100,11 +102,10 @@ while getopts a:o:b:n:t:l:e:c:p:d:r:s:x:-:z: OPT; do
 done
 
 # check parameter
-if [ -z "${contig_file}" ] || [ -z "${output_dir}" ] || { [ -z "${depth_file_path}" ] && [ -z "${bam_file_path}" ]; }; then
+if [ -z "${contig_file}" ] || [ -z "${output_dir}" ] || { [ -z "${depth_file_path}" ] && [ -z "${bam_file_path}" ] && [ -z "${coverm_file}" ]; }; then
   help_message
   exit 1
 fi
-
 
 sequence_count=$(grep -c "^>" "${contig_file}")
 
@@ -160,7 +161,7 @@ if [[ "$stage" == "data_augmentation" || "$stage" == "all" ]]; then
             echo "Running data augmentation."
             python -m SCGBinner.main generate_aug_data --contig_file ${contig_file} \
             --out_augdata_path ${output_dir}/data_augmentation \
-            --n_views ${n_views} --bam_file_path "${bam_file_path}" --num_threads ${num_threads} --depth_file_path "${depth_file_path}"
+            --n_views ${n_views} --bam_file_path "${bam_file_path}" --num_threads ${num_threads} --depth_file_path "${depth_file_path}" --coverm_file "${coverm_file}"
         else
             echo "No need to run data augmentation."
         fi
@@ -169,7 +170,7 @@ if [[ "$stage" == "data_augmentation" || "$stage" == "all" ]]; then
         echo "Running data augmentation."
         python -m SCGBinner.main generate_aug_data --contig_file ${contig_file} \
         --out_augdata_path ${output_dir}/data_augmentation \
-        --n_views ${n_views} --bam_file_path "${bam_file_path}" --num_threads ${num_threads} --depth_file_path "${depth_file_path}"
+        --n_views ${n_views} --bam_file_path "${bam_file_path}" --num_threads ${num_threads} --depth_file_path "${depth_file_path}" --coverm_file "${coverm_file}"
     fi
 
     if [[ $? -ne 0 ]] ; then echo "Something went wrong with running generating augmentation data. Exiting.";exit 1; fi
@@ -247,3 +248,4 @@ if [[ "$stage" == "clustering" || "$stage" == "all" ]]; then
 
     if [[ $? -ne 0 ]] ; then echo "Something went wrong with running clustering. Exiting.";exit 1; fi
 fi
+
