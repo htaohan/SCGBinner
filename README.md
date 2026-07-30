@@ -77,7 +77,7 @@ coverm contig --methods metabat -1 S1_illu_1.fastq -2 S1_illu_2.fastq -t 16 -o o
 # Generate single-coverage output from Illumina samples.
 coverm contig --methods metabat -1 S1_illu_1.fastq S2_illu_1.fastq -2 S1_illu_2.fastq S2_illu_1.fastq -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
 
-##############################Running SCGBinner using CoverM output##############################
+#####################Running SCGBinner using CoverM output#####################
 mamba activate SCGBinner
 scgbinner -a contig_file.fa -o output_path -m output_path/coverm.tsv -t 16
 ```
