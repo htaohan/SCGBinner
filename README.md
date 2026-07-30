@@ -41,7 +41,6 @@ scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16 -x 50
 ```bash
 # Data Augmentation
 scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16 --stage data_augmentation
-
 ########################## Training (only this stage needs a GPU) ##########################
 scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16 --stage training
 
