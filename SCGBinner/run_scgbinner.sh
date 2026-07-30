@@ -185,17 +185,25 @@ if [[ "$stage" == "training" || "$stage" == "all" ]]; then
     echo "Stage 2: Training (Get Representation)"
     echo "=========================================="
 
-    aug_folder=${output_dir}/data_augmentation
-    expected_tsv_count=$((n_views * 2))
-    if [ -d "$aug_folder" ]; then
-        aug_count=$(find "$aug_folder" -maxdepth 1 -type f -name '*.tsv' | wc -l)
-    else
-        aug_count=0
-    fi
-    if [ "$aug_count" -lt "$expected_tsv_count" ]; then
-        echo "Something went wrong with running generating augmentation data. Exiting."
-        exit 1
-    fi
+	aug_folder=${output_dir}/data_augmentation
+	expected_tsv_count=$((n_views * 2))
+	
+	if [ -d "$aug_folder" ]; then
+	    aug_count=0
+	
+	    for file in "$aug_folder"/*.tsv; do
+	        if [ -f "$file" ] && [ "$(wc -l < "$file")" -gt 1 ]; then
+	            ((aug_count++))
+	        fi
+	    done
+	else
+	    aug_count=0
+	fi
+	
+	if [ "$aug_count" -lt "$expected_tsv_count" ]; then
+	    echo "Something went wrong with generating augmentation data. Missing or empty TSV files detected. Exiting."
+	    exit 1
+	fi
 
     folder=${output_dir}/scgbinner_res
     keyword="embeddings.tsv"
