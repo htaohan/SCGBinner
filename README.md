@@ -2,14 +2,14 @@
 Metagenomic binning method
 ## Install SCGBinner
 Install the dependecies of SCGBinner
-```
+```bash
 mamba create -n SCGBinner python=3.9
 mamba activate SCGBinner
 mamba install biopython numpy=1.19 scipy igraph leidenalg joblib pandas=1.4 scikit-learn pyyaml tensorboard tqdm hnswlib atomicwrites bedtools
 pip install torch==2.0.0 torchvision==0.15.1 torchaudio==2.0.1 --index-url https://download.pytorch.org/whl/cu118
 ```
 Install SCGBinner
-```
+```bash
 git clone https://github.com/htaohan/SCGBinner.git
 cd SCGBinner
 pip install .
@@ -18,7 +18,7 @@ pip install .
 SCGBinner is recommended to be run in a GPU environment.
 
 If no GPU is available or GPU resources are limited for large-scale datasets, see the Time-Saving Tips.
-```
+```bash
 conda activate SCGBinner
 ########################## Run SCGBinner using single-coverage ##########################
 scgbinner -a contig_file.fa -o output_path -b S1.sorted.bam -t 16
@@ -34,12 +34,12 @@ The MAGs can be found in the scgbinner_res/SCGBINNER_result directory.
 
 ## Time-Saving Tips
 1. If no GPU is available or GPU resources are limited for large-scale datasets, you can speed up the process by setting -x 50 to reduce the training epochs (default: 200), while still producing comparable results.
-```
+```bash
 scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16 -x 50
 ```
 2. If you have a large number of samples and limited GPU resources, or if you want to integrate SCGBinner into a pipeline (e.g., Snakemake), note that only the training step requires a GPU. SCGBinner can therefore be run in separate stages as follows.
-```
-########################## Data Augmentation ##########################
+```bash
+# Data Augmentation
 scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16 --stage data_augmentation
 
 ########################## Training (only this stage needs a GPU) ##########################
@@ -49,7 +49,7 @@ scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16 --stage train
 scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16 --stage clustering
 ```
 3. If you have already processed the BAM file using the following command:
-```
+```bash
 bedtools genomecov -bga -ibam S1.sorted.bam > S1.sorted.bam.coverage
 bedtools genomecov -bga -ibam S2.sorted.bam > S2.sorted.bam.coverage
 
@@ -60,7 +60,7 @@ scgbinner -a contig_file.fa -o output_path -z "S1.sorted.bam.coverage S2.sorted.
 
 ## Additional Supported Coverage Information Formats
 ### Bedtools-style output 
-```
+```bash
 ###This can save substantial storage space for large-scale multi-coverage binning.
 bedtools genomecov -bga -ibam S1.sorted.bam | gzip > S1.sorted.bam.coverage.gz
 bedtools genomecov -bga -ibam S2.sorted.bam | gzip > S2.sorted.bam.coverage.gz
@@ -79,14 +79,14 @@ mamba activate CoverM
 coverm contig --methods metabat --single S1.fastq -p minimap2-hifi -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
 #####Generate multi-coverage output from HiFi samples.
 coverm contig --methods metabat --single S1.fastq S2.fastq -p minimap2-hifi -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
-#####Generate single-coverage output from a Nanopore sample.
+# Generate single-coverage output from a Nanopore sample.
 coverm contig --methods metabat --single S1.fastq -p minimap2-ont -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
 # Generate multi-coverage output from Nanopore samples.
 coverm contig --methods metabat --single S1.fastq S2.fastq -p minimap2-ont -t 16 -o output_path/coverm.tsv --reference output_path/contigs_splited.fasta
 ```
 
 ## Options
-```
+```bash
 Options:
   -a STR          metagenomic assembly file
   -o STR          output directory
@@ -100,7 +100,7 @@ Options:
 We provide a real dataset to demo and test the software.
 [https://zenodo.org/records/19476565](https://zenodo.org/records/21650609)
 You can run SCGBinner on this dataset as follows:
-```
+```bash
 scgbinner -a contigs.fasta -o output_path -b "test.sorted.bam" -t 16
 ```
 
