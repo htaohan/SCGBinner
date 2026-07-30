@@ -83,7 +83,7 @@ scgbinner -a contig_file.fa -o output_path -m output_path/coverm.tsv -t 16
 ```
 
 ## Options
-```bash
+```
 Options:
   -a STR          metagenomic assembly file
   -o STR          output directory
@@ -97,7 +97,7 @@ Options:
 We provide a real dataset to demo and test the software.
 [https://zenodo.org/records/19476565](https://zenodo.org/records/21650609)
 You can run SCGBinner on this dataset as follows:
-```bash
+```
 scgbinner -a contigs.fasta -o output_path -b "test.sorted.bam" -t 16
 ```
 
