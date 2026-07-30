@@ -103,7 +103,7 @@ You can run SCGBinner on this dataset as follows:
 scgbinner -a contigs.fasta -o output_path -b "test.sorted.bam" -t 16
 ```
 
-## How to Generate BAM Files
+## How to generate bAM files
 ```bash
 # PacBio Hifi reads
 minimap2 -t 16 -ax map-hifi contig_file.fa S1_hifi.fastq | \
