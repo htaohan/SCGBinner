@@ -49,8 +49,9 @@ scgbinner -a contig_file.fa -o output_path -b "*.sorted.bam" -t 16 --stage clust
 
 ## Additional Supported Coverage Information Formats
 ### Bedtools-style output 
+This can save substantial storage space for large-scale multi-coverage binning.
 ```bash
-# This can save substantial storage space for large-scale multi-coverage binning.
+# Use bedtools to convert BAM files into smaller compressed coverage files.
 bedtools genomecov -bga -ibam S1.sorted.bam | gzip > S1.sorted.bam.coverage.gz
 bedtools genomecov -bga -ibam S2.sorted.bam | gzip > S2.sorted.bam.coverage.gz
 scgbinner -a contig_file.fa -o output_path -z "S1.sorted.bam.coverage.gz S2.sorted.bam.coverage.gz" -t 16
