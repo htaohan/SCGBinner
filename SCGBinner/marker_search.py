@@ -1,5 +1,6 @@
 # modified from https://github.com/liu-congcong/MetaDecoder
 import os
+import shutil
 import sys
 from argparse import ArgumentParser, RawTextHelpFormatter
 from datetime import datetime
@@ -60,24 +61,25 @@ def make_file(prefix = None, suffix = None, folder=None):
     os.close(file_descriptor)
     return file
 
-def worker(command, message):
-    assert not run(command, stdout = DEVNULL, stderr = DEVNULL).returncode, message
+def worker(command, message, cwd=None):
+    assert not run(command, stdout = DEVNULL, stderr = DEVNULL, cwd=cwd).returncode, message
     return None
 
-def run_fraggenescan(fraggenescan, input_fasta, output_fasta, threads):
+def run_fraggenescan(input_fasta, output_fasta, threads):
     '''
     Run FragGeneScan to predict all protein sequences.
     '''
-    pkg_dir = os.path.dirname(__file__)
-    fraggenescan_path = os.path.join(pkg_dir, "fraggenescan")
+    fraggenescan = shutil.which("FragGeneScan")
+    fgs_bin = os.path.dirname(fraggenescan)
     worker(
-        [fraggenescan_path, '-s', input_fasta, '-o', output_fasta, '-w', '0', '-t', 'complete', '-p', str(threads)],
-        'An error has occured while running fraggenescan.'
+        ['FragGeneScan', '-s', input_fasta, '-o', output_fasta, '-w', '0', '-t', 'complete', '-p', str(threads)],
+        'An error has occured while running fraggenescan.', cwd=fgs_bin
     )
     os.remove(output_fasta + '.ffn')
     os.remove(output_fasta + '.out')
     os.replace(output_fasta + '.faa', output_fasta)
     return None
+
 def read_fasta_file(input_fasta):
     '''
     Parameters:
@@ -151,15 +153,13 @@ def split_fasta(input_fasta, output_files):
     open4r.close()
     return None
 
-def run_hmmsearch(hmmsearch, input_hmm, input_fasta, output_file, threads):
+def run_hmmsearch(input_hmm, input_fasta, output_file, threads):
     '''
     Run Hmmsearch to map hmms to sequences.
     '''
     input_fastas = list()
     output_files = list()
     process_pool = Pool(os.cpu_count())
-    pkg_dir = os.path.dirname(__file__)
-    hmmsearch_path = os.path.join(pkg_dir, "hmmsearch") 
     #
     for INPUT_FASTA in split_fasta(input_fasta, threads):
         input_fastas.append(INPUT_FASTA)
@@ -167,7 +167,7 @@ def run_hmmsearch(hmmsearch, input_hmm, input_fasta, output_file, threads):
         process_pool.apply_async(
             worker,
             (
-                [hmmsearch_path, '--cpu', '1', '--noali', '--domtblout', output_files[-1], input_hmm, INPUT_FASTA],
+                ['hmmsearch', '--cpu', '1', '--noali', '--domtblout', output_files[-1], input_hmm, INPUT_FASTA],
                 'An error has occured while running hmmsearch.'
             )
         )
@@ -252,7 +252,6 @@ def gen_scg_file(logger, contig_file: str, output_path: str, threads: int):
     logger.info(datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '->' + 'Identifying protein sequences.')
     logger.info(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'fraggenescan'))
     run_fraggenescan(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), 'fraggenescan'),
         contig_file, PROTEIN, threads
     )
     protein = parse_sequence_id(PROTEIN)
@@ -262,7 +261,6 @@ def gen_scg_file(logger, contig_file: str, output_path: str, threads: int):
     hmmsearch_output = make_file(folder=output_path)
     #
     run_hmmsearch(
-         os.path.join(os.path.dirname(os.path.realpath(__file__)),'hmmsearch'),
          os.path.join(os.path.dirname(os.path.realpath(__file__)),'markers.hmm'),
         protein, hmmsearch_output, threads
     )
@@ -276,3 +274,4 @@ def gen_scg_file(logger, contig_file: str, output_path: str, threads: int):
     os.remove(hmmsearch_output)
     extract_3rd_quartile_gene(logger, output_path + '/fasta.SEED', output_path + '/fasta_quarter.SEED')
     logger.info(datetime.now().strftime('%Y-%m-%d %H:%M:%S')+ '->'+ 'Finished.')
+

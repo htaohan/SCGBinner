@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "SCGBinner"
-version = "1.0.3"
+version = "1.0.4"
 description = "SCG-guided metagenomic binning tool"
 authors = [
     {name = "Haitao Han", email= "22110850021@m.fudan.edu.cn"}
@@ -24,6 +24,7 @@ include-package-data = true
 zip-safe = false
 
 [tool.setuptools.package-data]
-SCGBinner = ["*.sh", "fraggenescan", "hmmsearch", "markers.hmm","data_aug/*", "models/*", "scripts/*", "train/*"]
+SCGBinner = ["*.sh", "markers.hmm","data_aug/*", "models/*", "scripts/*"]
+
 
 
