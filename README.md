@@ -2,6 +2,7 @@
 Metagenomic binning method
 ## Install SCGBinner from Bioconda
 Install SCGBinner
+You can use either Conda or Mamba. The following instructions use Mamba.
 ```bash
 mamba create -n SCGBinner
 mamba activate SCGBinner
