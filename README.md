@@ -8,9 +8,8 @@ You can use either Conda or Mamba. The following instructions use Mamba.
 mamba create -n SCGBinner
 mamba activate SCGBinner
 mamba install bioconda::scgbinner
-```
-Install GPU Dependencies
-```bash
+
+#Install GPU Dependencies
 pip install torch==2.0.0 torchvision==0.15.1 torchaudio==2.0.1 --index-url https://download.pytorch.org/whl/cu118
 ```
 ## Install SCGBinner from Source
