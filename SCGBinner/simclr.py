@@ -5,7 +5,6 @@ import sys
 import torch
 import torch.nn.functional as F
 from torch.cuda.amp import GradScaler, autocast
-from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 from .utils import save_config_file, accuracy, save_checkpoint
 import pandas as pd
@@ -27,7 +26,6 @@ class SimCLR(object):
         self.optimizer = kwargs['optimizer']
         self.scheduler = kwargs['scheduler']
         self.logger = kwargs['logger']
-        self.writer = SummaryWriter(log_dir=self.args.output_path)
         logging.basicConfig(filename=os.path.join(self.args.output_path, 'training.log'), level=logging.DEBUG)
         self.criterion = torch.nn.CrossEntropyLoss().to(self.args.device)
 
