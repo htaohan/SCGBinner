@@ -19,6 +19,7 @@ Install the dependecies of SCGBinner
 mamba create -n SCGBinner python=3.9
 mamba activate SCGBinner
 mamba install biopython numpy=1.19 scipy igraph leidenalg joblib pandas=1.4 scikit-learn pyyaml tensorboard tqdm hnswlib atomicwrites bedtools fraggenescan hmmer
+pip install torch==2.0.0 torchvision==0.15.1 torchaudio==2.0.1 --index-url https://download.pytorch.org/whl/cu118
 ```
 Install SCGBinner
 ```bash
