@@ -161,7 +161,7 @@ class SimCLR(object):
             avg_loss = epoch_loss_sum / num_batches
             avg_top1 = epoch_top1_sum / num_batches
             logging.debug(f"Epoch: {epoch_counter}\tLoss: {avg_loss:.4f}\tTop1 accuracy: {avg_top1:.2f}")
-            self.logger.info(f"Finish traninning for epoch {epoch_counter}.\tLoss: {avg_loss:.4f}")
+            self.logger.info(f"Finish training for epoch {epoch_counter}.\tLoss: {avg_loss:.4f}")
 
             if self.args.earlystop:
                 if epoch_counter >= 10 and avg_top1 > 99.0:
