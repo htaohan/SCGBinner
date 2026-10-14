@@ -159,7 +159,7 @@ if [ ! -d ${out}/work_files ]; then mkdir ${out}/work_files; fi
 if [ ! -d ${bout} ]; then mkdir ${bout}; fi
 
 if [ -f ${out}/work_files/assembly.fa ]; then
-	comm "Looks like the assembly file is already coppied, but will re-transfer just in case to avoid truncation problems."
+	comm "Looks like the assembly file is already copied, but will re-transfer just in case to avoid truncation problems."
 	cp $ASSEMBLY ${out}/work_files/assembly.fa
 else
 	comm "making copy of assembly file $ASSEMBLY"
@@ -171,7 +171,7 @@ sample=${tmp%.*}
 
 # Index the assembly
 if [ -f ${out}/work_files/assembly.fa.bwt ]; then
-	comm "Looks like there is a index of the assembly already. Skipping..."
+	comm "Looks like there is an index of the assembly already. Skipping..."
 else
 	comm "Indexing assembly file"
 	bwa index ${out}/work_files/assembly.fa
